@@ -16,7 +16,14 @@ class ProductService
     {
 
         $products = $this->productRepository->getAllProducts($filters, $perPage);
-        return ProductResource::collection($products);
+
+        return [
+            'data' => ProductResource::collection($products->items())->resolve(),
+            'current_page' => $products->currentPage(),
+            'last_page' => $products->lastPage(),
+            'per_page' => $products->perPage(),
+            'total' => $products->total(),
+        ];
     }
 
     public function getProductById($id)

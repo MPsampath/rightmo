@@ -29,8 +29,8 @@ class ProductApiTest extends TestCase
         $response = $this->getJson('/api/products');
 
         $response->assertStatus(200)
-            ->assertJsonCount(3, 'data')
-            ->assertJsonStructure(['data', 'current_page', 'last_page', 'per_page', 'total']);
+            ->assertJsonCount(3, 'data.data')
+            ->assertJsonStructure(['data' => ['data', 'current_page', 'last_page', 'per_page', 'total']]);
     }
 
     public function test_it_filters_products_by_category(): void
@@ -43,8 +43,8 @@ class ProductApiTest extends TestCase
 
         $response = $this->getJson('/api/products?category_id=' . $electronics->id);
 
-        $response->assertStatus(200)->assertJsonCount(1, 'data');
-        $this->assertSame('Laptop', $response->json('data.0.name'));
+        $response->assertStatus(200)->assertJsonCount(1, 'data.data');
+        $this->assertSame('Laptop', $response->json('data.data.0.name'));
     }
 
     public function test_it_filters_products_by_price_range(): void
@@ -57,8 +57,8 @@ class ProductApiTest extends TestCase
 
         $response = $this->getJson('/api/products?min_price=20&max_price=100');
 
-        $response->assertStatus(200)->assertJsonCount(1, 'data');
-        $this->assertSame('Mid', $response->json('data.0.name'));
+        $response->assertStatus(200)->assertJsonCount(1, 'data.data');
+        $this->assertSame('Mid', $response->json('data.data.0.name'));
     }
 
     public function test_it_views_a_single_product_when_authenticated(): void
@@ -70,8 +70,8 @@ class ProductApiTest extends TestCase
             ->getJson("/api/products/{$product->id}");
 
         $response->assertStatus(200)
-            ->assertJsonPath('id', $product->id)
-            ->assertJsonPath('category.id', $category->id);
+            ->assertJsonPath('data.id', $product->id)
+            ->assertJsonPath('data.category.id', $category->id);
     }
 
     public function test_it_views_a_product_without_authentication(): void
@@ -97,7 +97,7 @@ class ProductApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonPath('name', 'New Gadget');
+            ->assertJsonPath('data.name', 'New Gadget');
 
         $this->assertDatabaseHas('products', [
             'name' => 'New Gadget',
@@ -126,7 +126,7 @@ class ProductApiTest extends TestCase
         $response = $this->withHeaders($this->authHeader())
             ->putJson("/api/products/{$product->id}", ['price' => 150]);
 
-        $response->assertStatus(200)->assertJsonPath('price', 150);
+        $response->assertStatus(200)->assertJsonPath('data.price', 150);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'price' => 150]);
     }
 

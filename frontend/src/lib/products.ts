@@ -14,7 +14,7 @@ export async function fetchProducts(
   const { data } = await client.get<PaginatedProducts>("/products", {
     params,
   });
-  return data;
+  return data.data;
 }
 
 export async function fetchProductById(
