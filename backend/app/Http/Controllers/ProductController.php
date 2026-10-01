@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Events\ProductCreated;
-use App\Events\ProductUpdated;
-use App\Events\ProductDeleted;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -39,8 +36,7 @@ class ProductController extends Controller
     {
         try {
             $product = $this->productService->createProduct($request->all());
-            // broadcast(new ProductCreated($product->resource));
-            return $this->successResponse($product, 'Product created successfully.', 201);
+            return $this->successResponse($product, 'Product created successfully.');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
@@ -50,7 +46,6 @@ class ProductController extends Controller
     {
         try {
             $product = $this->productService->updateProduct($id, $request->all());
-            // broadcast(new ProductUpdated($product->resource));
             return $this->successResponse($product, 'Product updated successfully.');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
@@ -61,7 +56,6 @@ class ProductController extends Controller
     {
         try {
             $result = $this->productService->deleteProduct($id);
-            // broadcast(new ProductDeleted((int) $id));
             return $this->successResponse($result, 'Product deleted successfully.');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
@@ -72,7 +66,6 @@ class ProductController extends Controller
         try {
             $request->validate(['image' => 'required|image|max:5120']);
             $image = $this->productService->uploadProductImage($id, $request->file('image'));
-            // broadcast(new ProductUpdated($image->resource));
             return $this->successResponse($image, 'Product image uploaded successfully.');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);

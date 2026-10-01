@@ -5,9 +5,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/ProductModal";
-import { createProduct, deleteProduct, updateProduct } from "@/lib/products";
+import {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+} from "@/lib/products";
 import { getApiErrorMessage } from "@/lib/errors";
-import { useEcho } from "@/lib/useEcho";
 import type { Category } from "@/types/category";
 import type {
   PaginatedProducts,
@@ -44,29 +47,6 @@ export default function ProductGrid({
   const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
   const [minPriceInput, setMinPriceInput] = useState(searchParams.get("min_price") ?? "");
   const [maxPriceInput, setMaxPriceInput] = useState(searchParams.get("max_price") ?? "");
-
-  // Live-sync the grid across all connected clients via Reverb broadcasts.
-  useEcho<{ product: Product }>("products", "ProductCreated", ({ product }) => {
-    setResult((prev) =>
-      prev.data.some((p) => p.id === product.id)
-        ? prev
-        : { ...prev, data: [product, ...prev.data] }
-    );
-  });
-
-  useEcho<{ product: Product }>("products", "ProductUpdated", ({ product }) => {
-    setResult((prev) => ({
-      ...prev,
-      data: prev.data.map((p) => (p.id === product.id ? product : p)),
-    }));
-  });
-
-  useEcho<{ id: number }>("products", "ProductDeleted", ({ id }) => {
-    setResult((prev) => ({
-      ...prev,
-      data: prev.data.filter((p) => p.id !== id),
-    }));
-  });
 
   const products = result.data;
 
