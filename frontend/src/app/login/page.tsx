@@ -76,12 +76,12 @@ function LoginForm() {
         </button>
       </form>
 
-      <p className="mt-4 text-sm text-zinc-500">
+      {/* <p className="mt-4 text-sm text-zinc-500">
         Don&apos;t have an account?{" "}
         <Link href="/register" className="font-medium text-zinc-900 hover:underline dark:text-zinc-50">
           Register
         </Link>
-      </p>
+      </p> */}
     </div>
   );
 }
