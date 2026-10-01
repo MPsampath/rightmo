@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,3 +25,4 @@ Route::middleware('jwt.auth')->group(function () {
 Route::get('/products', [ProductController::class, 'list']);
 Route::get('/categories', [CategoryController::class, 'all']);
 Route::get('/products/{id}', [ProductController::class, 'view']);
+Route::post('/products/{id}/ratings', [RatingController::class, 'store']);

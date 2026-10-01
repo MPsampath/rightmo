@@ -74,6 +74,13 @@ export async function deleteProduct(id: number): Promise<void> {
   await apiClient.delete(`/products/${id}`);
 }
 
+export async function submitProductRating(
+  id: number | string,
+  rating: number
+): Promise<void> {
+  await apiClient.post(`/products/${id}/ratings`, { rating });
+}
+
 export async function uploadProductImage(
   id: number,
   file: File,

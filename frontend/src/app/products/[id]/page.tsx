@@ -6,6 +6,7 @@ import type { AxiosError } from "axios";
 import StarRating from "@/components/StarRating";
 import { fetchProductById } from "@/lib/products";
 import { getServerApiClient } from "@/lib/server-api";
+import RatingForm from "@/components/RatingForm";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -61,6 +62,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
             ${Number(product.price).toFixed(2)}
           </p>
+
+          {!isAdmin && (
+          <div className="mt-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <RatingForm productId={product.id} />
+          </div>
+          )}
         </div>
       </div>
     </div>

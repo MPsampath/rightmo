@@ -123,6 +123,7 @@ export default function ProductGrid({
     const created = await createProduct(values);
 
     setResult((prev) => ({ ...prev, data: [created, ...prev.data] }));
+    
     return created;
   }
 

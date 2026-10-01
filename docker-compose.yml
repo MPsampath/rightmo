@@ -18,6 +18,23 @@ services:
     networks:
       - app-network
 
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: php artisan queue:work --tries=3 --timeout=90
+    environment:
+      APP_ENV: local
+      DB_CONNECTION: sqlite # or mysql if you switched
+      QUEUE_CONNECTION: database
+    volumes:
+      - backend_storage:/var/www/html/storage
+      - backend_database:/var/www/html/database
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
   frontend:
     build:
       context: ./frontend

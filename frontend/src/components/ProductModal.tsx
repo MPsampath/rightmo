@@ -244,22 +244,6 @@ export default function ProductModal({
               error={fieldErrors.price}
               className="flex-1"
             />
-
-            <FormInput
-              label="Rating (0-5)"
-              name="rating"
-              required
-              type="number"
-              min={0}
-              max={5}
-              step="0.1"
-              value={values.rating}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, rating: Number(e.target.value) }))
-              }
-              error={fieldErrors.rating}
-              className="flex-1"
-            />
           </div>
 
           <div className="mt-2 flex justify-end gap-2">

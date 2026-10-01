@@ -12,6 +12,7 @@ export default function NavBar() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   async function handleLogout() {
+    setIsConfirmOpen(false);
     await logout();
     router.push("/");
   }
