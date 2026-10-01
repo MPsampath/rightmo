@@ -16,5 +16,5 @@ interface ProductRepositoryInterface
 
     public function deleteProduct($id);
 
-    public function findByNameCategory($name, $category_id);
+    public function findByNameCategory($name);
 }

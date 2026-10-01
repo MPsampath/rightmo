@@ -61,8 +61,8 @@ class ProductRepo implements ProductRepositoryInterface
         return $product;
     }
 
-    public function findByNameCategory($name, $category_id)
+    public function findByNameCategory($name)
     {
-        return Product::where('name', $name)->where('category_id', $category_id)->first();
+        return Product::where('name', $name)->where('category_id')->first();
     }
 }

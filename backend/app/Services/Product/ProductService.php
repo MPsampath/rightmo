@@ -27,7 +27,7 @@ class ProductService
     public function createProduct($data)
     {
 
-        $product = $this->productRepository->findByNameCategory($data['name'] ?? '', $data['category_id'] ?? 0);
+        $product = $this->productRepository->findByNameCategory($data['name'] ?? '');
         if ($product) {
             throw new Exception('Product with this name already exists.');
         }
@@ -38,6 +38,11 @@ class ProductService
 
     public function updateProduct($id, $data)
     {
+        $existingProduct = $this->productRepository->findByNameCategory($data['name'] ?? '');
+        if ($existingProduct && $existingProduct->id !== $id) {
+            throw new Exception('Product with this name already exists.');
+        }
+        
         return new ProductResource($this->productRepository->updateProduct($id, $data));
     }
 
