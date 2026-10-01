@@ -10,7 +10,7 @@ Open your terminal in the root directory of the project and run:
 
 ```bash
 docker-compose up -d --build
-
+```
 # Product Management System
 
 A full-stack product management application built with Laravel and Next.js. This repository contains both the REST API backend and the Server-Side Rendered (SSR) frontend, designed to demonstrate scalable enterprise architecture, secure JWT authentication, and responsive UX.
