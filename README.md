@@ -1,3 +1,16 @@
+## 🐳 Docker Deployment (Zero-Setup Environment)
+
+For evaluation purposes, this project includes a complete Docker Compose configuration. The orchestration automatically provisions the MySQL database, Laravel API, and Next.js frontend, handling all environment setup, database migrations, and initial seeding without manual intervention.
+
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine installed and running.
+
+### 1. Boot the Application
+Open your terminal in the root directory of the project and run:
+
+```bash
+docker-compose up -d --build
+
 # Product Management System
 
 A full-stack product management application built with Laravel and Next.js. This repository contains both the REST API backend and the Server-Side Rendered (SSR) frontend, designed to demonstrate scalable enterprise architecture, secure JWT authentication, and responsive UX.
