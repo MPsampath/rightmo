@@ -25,7 +25,7 @@ if [ "$FRESH_DB" = "1" ]; then
     php artisan db:seed --force
 fi
 
-php artisan storage:link || true
+php artisan storage:link
 php artisan config:clear
 
 exec php artisan serve --host=0.0.0.0 --port=8000

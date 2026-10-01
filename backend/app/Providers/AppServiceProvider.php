@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Repositoryes\Product\ProductRepo;
 use App\Repositoryes\Product\ProductRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (config('app.env') === 'local') {
+            URL::forceRootUrl(config('app.url'));
+        }
     }
 }
