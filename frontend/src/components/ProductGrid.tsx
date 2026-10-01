@@ -5,11 +5,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/ProductModal";
-import {
-  createProduct,
-  deleteProduct,
-  updateProduct,
-} from "@/lib/products";
+import ConfirmModal from "@/components/ConfirmModal";
+import { createProduct, deleteProduct, updateProduct } from "@/lib/products";
 import { getApiErrorMessage } from "@/lib/errors";
 import type { Category } from "@/types/category";
 import type {
@@ -44,9 +41,18 @@ export default function ProductGrid({
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
-  const [minPriceInput, setMinPriceInput] = useState(searchParams.get("min_price") ?? "");
-  const [maxPriceInput, setMaxPriceInput] = useState(searchParams.get("max_price") ?? "");
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") ?? "",
+  );
+  const [minPriceInput, setMinPriceInput] = useState(
+    searchParams.get("min_price") ?? "",
+  );
+  const [maxPriceInput, setMaxPriceInput] = useState(
+    searchParams.get("max_price") ?? "",
+  );
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
 
   const products = result.data;
 
@@ -82,7 +88,10 @@ export default function ProductGrid({
 
   function handleSortChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const [sort_by, sort_dir] = e.target.value.split(":");
-    updateSearchParams({ sort_by: sort_by || undefined, sort_dir: sort_by ? sort_dir : undefined });
+    updateSearchParams({
+      sort_by: sort_by || undefined,
+      sort_dir: sort_by ? sort_dir : undefined,
+    });
   }
 
   function goToPage(page: number) {
@@ -112,22 +121,30 @@ export default function ProductGrid({
     }
 
     const created = await createProduct(values);
-    
+
     setResult((prev) => ({ ...prev, data: [created, ...prev.data] }));
     return created;
   }
 
   async function handleDelete(product: Product) {
-    if (!window.confirm(`Delete "${product.name}"?`)) return;
+    setProductToDelete(product.id);
+    setIsConfirmOpen(true);
+  }
+
+  async function confirmDelete() {
+    if (productToDelete === null) return;
     try {
-      await deleteProduct(product.id);
+      await deleteProduct(productToDelete);
       setResult((prev) => ({
         ...prev,
-        data: prev.data.filter((p) => p.id !== product.id),
+        data: prev.data.filter((p) => p.id !== productToDelete),
       }));
       toast.success("Product deleted successfully!");
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Unable to delete product."));
+    } finally {
+      setProductToDelete(null);
+      setIsConfirmOpen(false);
     }
   }
 
@@ -135,9 +152,24 @@ export default function ProductGrid({
     setResult((prev) => ({
       ...prev,
       data: prev.data.some((product) => product.id === updated.id)
-        ? prev.data.map((product) => (product.id === updated.id ? updated : product))
+        ? prev.data.map((product) =>
+            product.id === updated.id ? updated : product,
+          )
         : [updated, ...prev.data],
     }));
+  }
+
+  function handleClear() {
+    setSearchInput("");
+    setMaxPriceInput("");
+    setMinPriceInput("");
+    updateSearchParams({
+      search: undefined,
+      min_price: undefined,
+      max_price: undefined,
+      category_id: undefined,
+      page: "1",
+    });
   }
 
   return (
@@ -172,23 +204,15 @@ export default function ProductGrid({
           >
             Search
           </button>
-        </form>
 
-        <select
-          onChange={handleSortChange}
-          defaultValue={
-            searchParams.get("sort_by")
-              ? `${searchParams.get("sort_by")}:${searchParams.get("sort_dir") ?? "asc"}`
-              : ""
-          }
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
-        >
-          <option value="">Sort by…</option>
-          <option value="price:asc">Price: Low to High</option>
-          <option value="price:desc">Price: High to Low</option>
-          <option value="rating:asc">Rating: Low to High</option>
-          <option value="rating:desc">Rating: High to Low</option>
-        </select>
+           <button
+            type="button"
+            onClick={() => handleClear()}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+          >
+            Clear
+          </button>
+        </form>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -205,7 +229,26 @@ export default function ProductGrid({
           ))}
         </select>
 
-        <form onSubmit={handlePriceFilterSubmit} className="flex items-center gap-2">
+        <select
+          onChange={handleSortChange}
+          defaultValue={
+            searchParams.get("sort_by")
+              ? `${searchParams.get("sort_by")}:${searchParams.get("sort_dir") ?? "asc"}`
+              : ""
+          }
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        >
+          <option value="">Sort by…</option>
+          <option value="price:asc">Price: Low to High</option>
+          <option value="price:desc">Price: High to Low</option>
+          <option value="rating:asc">Rating: Low to High</option>
+          <option value="rating:desc">Rating: High to Low</option>
+        </select>
+
+        <form
+          onSubmit={handlePriceFilterSubmit}
+          className="flex items-center gap-2"
+        >
           <input
             type="number"
             min={0}
@@ -284,6 +327,17 @@ export default function ProductGrid({
           onImageUploaded={handleImageUploaded}
         />
       )}
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="Delete Product"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        confirmText="Yes, Delete"
+        cancelText="Keep Product"
+        isDestructive={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 }

@@ -15,6 +15,9 @@ docker-compose up -d --build
 
 A full-stack product management application built with Laravel and Next.js. This repository contains both the REST API backend and the Server-Side Rendered (SSR) frontend, designed to demonstrate scalable enterprise architecture, secure JWT authentication, and responsive UX.
 
+email :- test@example.com
+password :- password
+
 ## 🚀 Tech Stack
 
 **Backend (API):**

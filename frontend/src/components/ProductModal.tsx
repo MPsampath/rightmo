@@ -5,7 +5,11 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import FormInput from "@/components/FormInput";
 import { uploadProductImage } from "@/lib/products";
-import { getApiErrorMessage, getValidationErrors, isValidationError } from "@/lib/errors";
+import {
+  getApiErrorMessage,
+  getValidationErrors,
+  isValidationError,
+} from "@/lib/errors";
 import type { Category } from "@/types/category";
 import type { Product, ProductFormValues } from "@/types/product";
 
@@ -57,7 +61,7 @@ export default function ProductModal({
             price: product.price,
             rating: product.rating,
           }
-        : { ...emptyValues, category_id: categories[0]?.id ?? 0 }
+        : { ...emptyValues, category_id: categories[0]?.id ?? 0 },
     );
   }
 
@@ -85,12 +89,18 @@ export default function ProductModal({
 
     try {
       const savedProduct = await onSubmit(values);
-      toast.success("Product saved successfully!");
+      if (product?.id) {
+        toast.success("Product updated successfully!");
+      } else {
+        toast.success("Product saved successfully!");
+      }
 
       if (imageFile) {
         uploadImageWithProgressToast(savedProduct.id, imageFile);
       }
-
+      setLastOpenKey(null);
+      setImageFile(null);
+      setPreviewUrl(null);
       onClose();
     } catch (error) {
       if (isValidationError(error)) {
@@ -113,10 +123,11 @@ export default function ProductModal({
       toast.success("Image uploaded successfully!", { id: toastId });
       onImageUploaded?.(updated);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Image upload failed."), { id: toastId });
+      toast.error(getApiErrorMessage(error, "Image upload failed."), {
+        id: toastId,
+      });
     }
   }
-
 
   const existingImageUrl = product?.image_url ?? null;
 
@@ -135,7 +146,9 @@ export default function ProductModal({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">Image</span>
+            <span className="font-medium text-zinc-700 dark:text-zinc-300">
+              Image
+            </span>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -150,7 +163,9 @@ export default function ProductModal({
                   className="object-cover"
                 />
               ) : (
-                <span className="text-xs text-zinc-500">Click to choose an image</span>
+                <span className="text-xs text-zinc-500">
+                  Click to choose an image
+                </span>
               )}
 
               {existingImageUrl && (
@@ -180,12 +195,17 @@ export default function ProductModal({
           />
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">Category</span>
+            <span className="font-medium text-zinc-700 dark:text-zinc-300">
+              Category
+            </span>
             <select
               required
               value={values.category_id || ""}
               onChange={(e) =>
-                setValues((v) => ({ ...v, category_id: Number(e.target.value) }))
+                setValues((v) => ({
+                  ...v,
+                  category_id: Number(e.target.value),
+                }))
               }
               className={`rounded-md border px-3 py-2 text-sm dark:bg-zinc-800 ${
                 fieldErrors.category_id
@@ -203,7 +223,9 @@ export default function ProductModal({
               ))}
             </select>
             {fieldErrors.category_id && (
-              <p className="text-xs text-red-500">{fieldErrors.category_id[0]}</p>
+              <p className="text-xs text-red-500">
+                {fieldErrors.category_id[0]}
+              </p>
             )}
           </label>
 
@@ -254,7 +276,11 @@ export default function ProductModal({
               disabled={submitting}
               className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
             >
-              {submitting ? "Saving…" : product ? "Save Changes" : "Add Product"}
+              {submitting
+                ? "Saving…"
+                : product
+                  ? "Save Changes"
+                  : "Add Product"}
             </button>
           </div>
         </form>
@@ -262,5 +288,3 @@ export default function ProductModal({
     </div>
   );
 }
-
-
