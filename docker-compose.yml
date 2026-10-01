@@ -1,0 +1,45 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "Product Dashboard"
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: sqlite
+      SANCTUM_STATEFUL_DOMAINS: "localhost,localhost:3000"
+    volumes:
+      - backend_storage:/var/www/html/storage
+      - backend_database:/var/www/html/database
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    ports:
+      - "3000:3000"
+    environment:
+      # Used by the browser - must be reachable from the host machine.
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      # Used by Next.js SSR (runs inside the container) to reach the backend over the Docker network.
+      API_INTERNAL_URL: http://backend:8000/api
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  backend_storage:
+  backend_database:

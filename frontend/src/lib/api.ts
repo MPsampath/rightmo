@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// On the server (SSR/Docker), prefer an internal network URL (e.g. http://backend:8000/api)
+// when provided; the browser always uses the publicly reachable NEXT_PUBLIC_API_URL.
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+  (typeof window === "undefined" ? process.env.API_INTERNAL_URL : undefined) ??
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:8000/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
