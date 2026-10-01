@@ -70,3 +70,6 @@ php artisan jwt:secret
 
 # Create the symbolic link for local image storage
 php artisan storage:link
+
+# Run Queue worke
+php artisan queue:work --tries=3 --timeout=90
