@@ -11,7 +11,7 @@ export async function fetchProducts(
   params: ProductQueryParams = {},
   client: AxiosInstance = apiClient
 ): Promise<PaginatedProducts> {
-  const { data } = await client.get<PaginatedProducts>("/products", {
+  const { data } = await client.get<{ data: PaginatedProducts }>("/products", {
     params,
   });
   return data.data;
